@@ -1,0 +1,143 @@
+
+CS 293
+Data Structures and Algorithms Lab
+Lab #12
+----------------------------------
+
+heads I win, tails also I win!
+
+Based on which side of the bed one wakes up, if access to a min-heap
+or a max-heap is required, waking up in the morning would need two shots
+of coffee instead of one. To try and make the mornings brighter and save
+us from the double coffee shots, exist the min-max heap (or the max-min heap). 
+Following is a description of the secret process.
+
+Given a set of elements S, a min-max heap is arranged as a binary
+tree T with the following properties,
+
+1. The tree T is min-max ordered.
+   Values stored at even levels (root is level 0) are smaller than or equal
+   to all values stored in the descendant nodes.
+   Similarly, values stored at odd levels are greater than or a equal to
+   all values stored in the descendant nodes. (refer MinMaxHeapSample.png in 
+	 figures folder)
+2. The above ordering on the tree maintains a heap property (at each level).
+3. Root node of the tree T holds the minimum element of S.
+   The maximum value of root node's children is the maximum element of S.
+
+Based on which side of the bed you wake-up, getmin and getmax operations
+can be applied on the same tree T. phew! ... one step closer to world peace.
+(more details: http://www.cs.otago.ac.nz/staffpriv/mike/Papers/MinMaxHeaps/MinMaxHeaps.pdf)
+
+Todos:
+------
+1. Implement a class which implements the min-max-heap.
+2. The following operations are to be supported.
+   insert: insert an element to the heap
+   getmin: get minimum value of inserted elements
+   getmax: get maximum value of inserted elements
+   deletemin: delete minimum element from the heap
+   deletemax: delete maximum element from the heap
+3. Follow input/output formats mentioned below.
+4. Note that all operations to be performed on the same binary tree.
+   Convince yourselves that all insert and delete operations are O(log n).
+
+Hints:
+------
+1. A binary heap can be implemented using an array/vector.
+   Chilren on node 'i' are stored at index '2i' and '2i+1' (with some offsetting
+   for zero-indexed arrays).
+
+2. To insert elements
+   - insert element to heap (this is similar to the min-heap or max-heap operation)
+   - compare with parent and check if new element is smaller/greater.
+     if smaller, the element is smaller than all nodes at max level in path
+	 from root to new node. compare with min levels to place node in tree.
+	 compare and heapify with nodes at the min levels only.
+
+     if greater, the element is greater than all nodes at min level in path
+	 from root to new node. compare with max levels to place node in tree.
+	 compare and heapify with nodes at the max levels only.
+
+3. To delete an element use the following wrapper function. (also refer delete.gif 
+	 in figures)
+
+   Based whether deletemin or deletemax, select root or one its child to delete.
+   Let this node be index 'i'.
+   Delete 'i' and replace it with last element of the heap.
+   Call the following wrapper function.
+ 
+   procedure trickledown(i) // i is the position in the array
+      if i is on a min level then
+         trickledownmin(i)
+      else
+         trickledownmax(i)
+      endif 
+
+
+   // sketch of the trickledownmin procedure 
+   procedure trickledownmin(i)
+   
+      Find index 'm', node with the smallest value from the set of children and 
+      grandchildren of node 'i'.
+
+      if 'm' is grandchild of 'i'
+	      compare value at 'm' and 'i'
+		     if required, swap values at 'm' and 'i' 
+		     compare value of 'm' with parent(m)   // if value at m changed
+		         if required, swap values at 'm' and parent(m)
+		     trickledown(m)   // if value at m changed
+      else if 'm' is child of 'i'
+	      compare value at 'm' and 'i'
+		     if required, swap values at 'm' and 'i' 
+      endif   
+
+ 
+    A similar procedure is required for trickledownmax, but with all relational
+	operators reversed.
+
+	This is similar in spirit to iterate+swap along a path based delete or trickledown
+	operation of the regular binary heap, but in this case both levels need to be
+	accounted for.
+
+
+Input + Output  (specification in alternate lines)
+--------------
+i <num>       // input number <num> to min-max heap
+<num> <index> // output <num> and <index> in tree where inserted. root is index 0.
+m             // getmin of elements inserted in minmax heap
+<minnum>      // output <minmum> the minimum value in heap
+M             // getmax of elements inserted in minmax heap
+<maxnum>      // output <minmum> the minimum value in heap
+d             // delete min from minmax heap
+<nextmin>      // output <nextmin> the minimum value in heap post deletion (0 if 
+                  no records)
+D             // delete max from minmac heap
+<nextmax>      // output <nextmax> the maximum value in heap post deletion (0 if 
+                  no records)
+e             // exit
+
+example input:
+i 3
+i 2
+i 5
+i 6
+m
+M
+d
+D
+e
+
+example output:
+3 0
+2 0
+5 2
+6 1						//as 3 trickles down to the end
+2
+6
+3
+5
+
+Submission: single file named minmaxheap.cpp 
+----------
+(with class file spefication, implementation and the main function).

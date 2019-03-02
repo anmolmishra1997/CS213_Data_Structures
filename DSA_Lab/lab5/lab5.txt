@@ -1,0 +1,161 @@
+
+CS 293
+Data Structures and Algorithms Lab
+Autumn 2016
+
+Lab #5
+Let's Hash!
+----------------------------------
+
+We define a 'document' as a collection of space seperated words 
+containing only lower case characters. Given 'k' documents and a number 
+'m', output m most frequently occuring words considering all the words
+of the documents put together. 
+
+You also need to answer queries specified by the format given below:
+(1) <word> ONLY 
+    given this query, output the indices of documents in
+    which given 'word' is present.
+
+(2) <word1> OR <word2> 
+    given this query, output set of all the 
+    documents in which either 'word1' or 'word2' is present.
+
+(3) <word1> AND <word2> 
+    given this query, output set of all the 
+    documents in which both 'word1' and 'word2' are present.
+
+(4) <word1> EXCEPT <word2> 
+    given this query, output set of all the 
+	documents which contains 'word1' and not 'word2'.
+
+All document ids (indices) should be printed in SORTED order
+
+Optional:
+Can you handle nested boolean queries (involving queries (2),(3) & (4) above) ?
+Suppose a query like  ((<w1> AND <w2> ) OR <w3> ) which returns all the documents 
+in which either (both <w1> and <w2> are present) or <w3> is present.
+You can assume that all queries will be explictly parenthesised, but the degree
+of nesting can be arbitrary.
+
+Key idea:
+---------
+For each word maintain state that keeps track of number of occurrences and also
+the documents in which the word appears. The data structure for the set of documents
+per word needs some thought, as it affects the procedure of implementing the
+queries mentioned above
+Use a hashmap (c++ unordered_map) to store this state information for each word.
+
+Implement this lab using functions and classes from the C++ standard template
+library (STL). The C++ STL provides standard functions and classes for
+several common tasks and data structures, e.g., sorting, searching,
+stacks, queues, unordered_map (hashmaps) etc. Morever, as the name suggests,
+these classes are all template based and can be parameterized to work with
+customized data types.
+
+Steps for implementation:
+1. Get acquainted with C++ STLs amd File IO. Look examples from references
+   or online.
+2. Build in steps. First version of the program can read a single file, add each word
+   to a hashmap and maintain its frequency count.
+   Print contents of the hashmap ... number of buckets, items per bucket,
+   top-k words for that file.
+3. Repeat above for two files. Do this for two small files, for which you
+   can work out answers by paper-and-pencil.
+4. Implement the general case and the queries.
+
+
+Input format: 
+-------------
+First line contains k, q (no. of queries) and m
+next 2*k lines contains names of k documents seperated by '$' (see sample input)
+next q lines contains queries of one of the four types as described above. Filename 
+is always of the form $i.txt where $i corresponds to the doc_id of the file
+
+Output format:
+--------------
+
+First 'm' lines should contain 'm' most frequent words in non-increasing order 
+of their frequency along with the frequency count for each, followed by a '$'
+separator. In cases of same frequency, print the words in alphabetical order 
+(lexicographic/dictionary)
+Next q lines must contain answers for the queries as described above seperated 
+by '$' (see sample output). Print an empty line (no spaces) if the specified query does not 
+satisfy the query. 
+Documents are assumed to be zero indexed i.e., 0, 1, ....., k etc. extracted 
+from the document name.
+
+
+Example:
+
+Input:
+--------------------------------------------
+3 5 3
+0.txt
+$
+1.txt
+$
+2.txt
+$
+pikachu ONLY
+niantic OR nintendo  
+augmented ONLY
+pokemon AND augmented
+pokemon EXCEPT augmented
+---------------------------------------------
+Assuming the files are:
+
+0.txt
+ash go augmented pokemon go pokemon pokemon pokemon
+
+1.txt 
+nintendo pokemon augmented go ash ash pikachu 
+
+2.txt
+go ash augmented augmented augmented pikachu nintendo niantic 
+
+
+Output:
+---------------------------------------------
+5 augmented 
+5 pokemon 
+4 ash 
+$
+1 2
+$
+1 2
+$
+0 1 2
+$
+0 1
+$
+
+$
+---------------------------------------------
+
+NOTE 1: Although 'ash' and 'go' both have the same frequency. We print only the top 3 and 
+ash precedes go alphabetically.
+
+NOTE 2: These indexed documents have been provided to you in a folder named 'files' (Yeah,
+very apt and unimaginative) inside the Testcases folder. 
+Ensure to have this 'files' folder loctated in the same folder/location as the input 
+files during execution.
+
+To execute: 
+./a.out < small_in0 > output0			//generates output in file output0
+
+You can compare this with the actual output provided by doing a 'diff' comparison:
+diff output0 small_out0
+A perfect match will result in no output.
+
+Submission:
+-----------
+
+A SINGLE file: hashwords.cpp
+
+the file should contain a main and all other functions that will read the
+files and process other input for required output.
+
+Tar and upload it as <roll_no>_lab5.tar.gz
+The tar must contain only hashwords.cpp and no other files/folders. 
+Please ensure strict adherence to this format

@@ -1,0 +1,148 @@
+
+
+CS 293
+Data Structures and Algorithms Lab
+Autumn 2016
+
+Lab 10
+-----------------------------------
+
+how strongly are you connected?
+
+some definitions:
+-----------------
+
+1. graph: 
+a graph is a set of objects, referred to as vertices, some of which can
+be related to each other. Related pair of vertices are called an edge,
+or conversely an edge represents a relation between two vertices.
+
+a graph can be thought of as a generalized tree, one where each node
+can have multiple parents and where each edge can be assigned a value
+as part of the relation function.
+
+2. undirected and directed graphs
+with undirected graphs the pairs of vertices which form the edges are
+unordered, they form bi-directional/undirected edges of a graph.
+
+with directed graphs, the edges correspond to ordered pairs of vertices,
+they form directed edges of a graph. e.g., an edge from vertex a to b,
+does not imply an edge from b to a, unless part of the directed graph.
+
+3. strongly connected directed graphs
+a directed graph is said to be strongly connected if every vertex is
+reachable (by a graph traversal) from every other vertex.
+
+4. strongly connected components (scc)
+a directed graph can be partitioned into sub-graphs each of which
+are strongly connected and maximal, then the subgraphs are the strongly 
+connected components of the graph. The subgraphs are maximal, i.e.,
+addition of any more edge (from the main graph) will break the 
+strongly connected property of the subgraph.
+
+5. depth-first-search and breadth-first-search
+depth-first-search (dfs) is a traversal on the graph where the traversal
+starts from any node of the graph and explores/traverses as far as possible 
+along each branch before backtracking (before exploring neighboring edges 
+of the original branch). 
+
+breadth-first-search (bfs) is a traversal on the graph where the traversal
+starts from any node of the graph and explores/traverses the neighboring
+list of edges in some (arbitrary) order before traversing the next level 
+of neighbors.
+
+e.g., for the following graph G (V, E)
+V = {a,b,c,d,e}
+E = { (a,b), (a,c), (a,d), (b,e), (a,e) }
+
+dfs: a b e c d
+bfs: a b c d e
+
+note:
+-----
+1. a dfs traversal can be implemented using a stack.
+2. a bfs traversal can be implemented using a queue.
+3. graphs can be represented using the linked lists or matrix data structures.
+In case of a matrix, entries in rows and columns store the edge relations between 
+vertices. an adjacency list is list per vertex, which stores a list of adjacent 
+vertices.
+
+todos:
+------
+
+given a directed graph G(V, E), determine its strongly connected components.
+
+algorithm: (the kosaraju algorithm)
+---------
+1. Compute finishing times f[v] for all v in the vertex set V
+using a DFS traversal. (Note: If a cycle exists in the graph, dfs stops
+when it revisits a visited vertex)
+
+finish time: A counter which is unique for each vertex. It is updated 
+only once for a vertex only when the vertex has been fully explored 
+during DFS traversal (i.e., This counter is only assigned to a vertex
+when we have visited all its neighbours.)
+
+The figure DFS_detailed.jpg depicts a sample DFS traversal. It maintains two
+time counters. The first counter stores 'discovery' time, the first time a 
+vertex is discovered and the second counter stores finish time, i.e., when the
+search finished examining all adjacent vertices for a given vertex.
+
+
+2. Compute G' the transpose of G.
+G' = (V, E'), where E' = {(u, v): (v, u) in E}.
+
+3. Consider vertices in order of decreasing f[v] (as computed in step 1).
+Perform DFS on each vertex of G'.
+
+4. Determine vertices in each tree of the depth-first traversal. Each tree
+is a strongly connected component of G.
+(Note: DFS of a graph always results in trees)
+
+this works because:
+The graphs G and G' have the same SCC's---vertices u and v are reachable 
+from each other in G if and only if reachable from each other in G'.
+
+Note: A naive approach would be to run DFS from each vertex and check for each 
+pair (u,v) if v is reachable from u and vice versa. This requires O((m+n)n^2)
+which is O(n^3) if m<<n
+ 
+input format:
+------------
+First line has number of vertices(n) and number of edges(m)
+Next m lines each are a x and y pair (1<=x<=n and 1<=y<=n) indicating a directed 
+edge from vertex x to vertex y.
+Next line has value "q", the number of queries.
+Next q lines have a and b (1<=a,b<=n) asking whether a and b lie in the same 
+strongly connected component or not.
+
+output format:
+--------------
+Output q lines each having 1 or 0 indicating whether a and b lin the same
+scc or not respectively
+
+Example Input:
+5 5				
+3 5
+4 5
+5 3
+4 2
+5 1
+4
+1 1
+1 2
+1 1
+5 3
+
+Example Output:
+1
+0
+1
+1
+// Explanation: sccs are (3,5) (4) (2) (1)
+
+
+submission:
+single code file named scc.cpp to be submitted on bodhitree1.cse.iitb.ac.in
+
+

@@ -1,0 +1,141 @@
+
+CS 293 Autumn 2016
+Data Structures and Algorithms Lab
+----------------------------------
+
+File caching with radix-trees
+
+In this lab we will study an operating system/file system feature 
+that uses a tree-like data structure, the radix tree.
+
+Reading files from disk in expensive, compared to reading data from 
+memory. A commonly used solution for this is to cache/store file content
+in memory. File systems implement this optimization transparently to users 
+and applications. All modern file systems, will have an in-memory cache 
+(called the page cache) to store file data to speed up file accesses.
+Frequently, this data is also pre-fetched to be available in memory before 
+it is actually read, e.g., a file access pattern thats reads a file 
+sequentially. Even if content is not pre-fetched it can be still useful 
+on repeat requests, e.g., reading the same C++ header file from different 
+programs.
+
+For the page cache to be useful, the insert and lookup operations have
+to efficient, else cache-hits will not reduce data access latency.
+A data structure used for this purpose is the radix-tree, which is tailored
+for quick inserts and lookups. The radix tree basically is used as a key-value
+store, where the key is used to navigate the tree and leaf nodes store
+values/items. In this lab, we will study how Linux uses the radix tree for
+efficient page cache implementation.
+
+
+Linux radix tree based page caching
+-----------------------------------
+In Linux, a radix tree node contains a number of slots, each of which can
+contain a pointer to something of interest---a value/item, pointer to
+another node or to NULL (no value for key). Empty slots contain NULL pointers.
+
+Refer to linux-radix-tree.pdf to see examples.
+
+(a) The example uses a radix tree node that has 64 slots.
+Figure (a) has two values, one at index/slot 0 and the other at index=4.
+Assuming the page size (which cache disk contents) of size 4 KB, the
+page cache holds file content from offset 0 to 4095 (in page pointed by pointer
+in index 0) and content from offset 4*4096 to 5*4096-1. Any requests
+for content with offsets of file in this range will be fetched from 
+memory without requiring disk accesses.
+
+Note: File access by programs is offset-based. Start of file is offset 0
+and length of file determines last valid offset of the file. For the page
+cache, the offset acts as the key and value are contents at the offset.
+
+As seen in the figure, Linux maintains too main structures, the radix_tree_root
+which represents root of the tree and stores the height of the tree
+and a pointer to the radix_tree_node. The radix_tree_node as discussed above
+maintains a set of slots per node towards maintaining the key-value mapping.
+
+(b) Figure (b) shows a case where content from offset range of 131*4096 to
+132*4096-1 was accessed. Since this index cannot be accommodated in 64 slots
+and new radix tree node has to be created. The two nodes are rooted by a
+common parent, whose slots 0 and 2 point to the relevant radix tree nodes.
+Note that slot 1 is still pointing to NULL. Since index 132 is greater
+than 128 the total number of slots available from nodes pointed by
+slots 0 and 1 of the root radix tree node (the node pointed by 
+radix_tree_root). Also, the corresponding state information of all nodes
+has been updated, the values of height and count in the root and the radix
+nodes respectively.
+
+More notes/comments:
+--------------------
+1. Why is this type of a tree called the radix tree?
+
+2. Will the size/height of the tree decrease? How will this be handled?
+   e.g., some pages of a file in memory are removed, the corresponding slots 
+   in the radix-tree nullified as well.
+
+3. Writes to files are through page caches as well, but need special handling
+   as contents updated in memory, require disk updations as well. 
+   We will not deal with these aspects (2&3) in this lab.
+
+4. Radix trees can be quite sparse---many slots empty!
+
+5. The generalized radix tree is a trie (search tree) with node that is the 
+only child is merged with the parent node (and hence space optimized).
+
+Todos:
+-----
+1. Design and implement a radix tree based data structure similar to the 
+   one shown in the figure (in file linux-radix-tree.pdf)
+
+2. Implement the insert, update, delete and lookup of radix tree operations.
+
+Note: 
+- Insert can/will cause new node creation and re-organization of the tree.
+- Delete of a key/offset should set the corresponding value in the leaf node
+  to NULL. If all the slots are NULL, the corresponding entry in the parent
+  node should be updated to NULL as well and this check is recursively applied to 
+  the parent node.
+  This is radix tree feature, a key lookup should fail as close as possible to
+  the root if the key is eventually not present.
+- Assume each radix node has 64 slots.
+
+
+Input format
+------------
+Note: key in the input is analogous to the file offset and value of the file content.
+
+i a v  // insert entry with key a and value v in O(H) where H is
+       // height of radix tree
+d a    // delete entry with key a in O(H)
+l a    // lookup value with key as a in O(H)
+p      // print radix tree statistics
+e      // exit
+(keys are assumed to be non-negative) 
+
+
+Output format
+--------------
+- for 'l a', the lookup command, output values for key 'a' or -1 on no-key
+
+- for 'p' print tree information print the following::
+  
+  number-of-non-empty-slots-per-radix-node <SPACE> height-of-tree <SPACE> total-number-of-radix-tree-nodes
+
+  height-of-tree is measured from the radix-tree-root. 
+  with one radix-tree-node, height of tree is 1.
+
+  total-number-of-radix-tree-nodes counts the total number of radix tree nodes. In the above example,
+  number of radix nodes is 1.
+
+  number-of-non-empty-slots-per-radix-node prints count of non-empty slots for each radix node 
+  of the tree. 
+  the print sequence is based on a POST ORDER traversal of the radix tree.
+  
+
+Submission:
+----------
+To submit a single file: radixtree.cpp (on bodhitree1.cse.iitb.ac.in)
+
+
+
+
+

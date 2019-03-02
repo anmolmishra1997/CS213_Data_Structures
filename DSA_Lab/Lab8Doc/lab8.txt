@@ -1,0 +1,187 @@
+CS 293, Autumn 2016
+Data Structures and Algorithms
+Lab #8
+------------------------------
+
+Segment trees
+-------------
+
+In today's lab, we will discuss data structures which can efficiently answer static as well
+as dynamic range queries. 
+
+As part of this lab, we will study different data structures and processes used to
+efficiently answer queries on a range of numbers (range queries).
+For example, given an array of numbers, find index/value of the minimum element within
+a range [i...j] (where i and j are indices within the array). This query is commonly
+known as the Range Minimum Query (RMQ).
+
+For example, given an array A of size n = 7 below,
+A = 0 1 2 6 4 5 2
+RMQ(1, 3) = 1, as 1 is the minimum value among A[1], A[2], and A[3]. 
+To check your understanding of RMQ, verify that in the array A below, 
+RMQ(3, 4) = 4, RMQ(0, 0) = 0, RMQ(0, 1) = 0, and RMQ(5, 6) = 2. 
+
+There are several ways to solve this problem, with varying space and time complexity.
+1. For every query traverse through the list of numbers and estimate answer to
+   query in desired range.
+   Space complexity: none (assuming the sequence of numbers is input, so no storage)
+   Time complexity: O(n)  (okay for small n, but not good if n is large and so are number
+                           of queries).
+
+2. Maintain a two-dimensional matrix of size (n,n), where each index (i,j) holds
+   value of the metric in range i,j.
+   Space complexity: O(n^2)
+   Time complexity: O(n^2) of trivial algorithm to estimate metric for all ranges.
+
+   Time complexity of query: O(1)
+
+3. The space complexity and pre-processing time complexity of approach 2 can be 
+   improved to O(n log n) instead of O(n^2).
+
+   The key idea of this solution is to split A, the two-dimensional array, into sub arrays 
+   of length 2^j for each nonnegative integer j such that 2^j <= n. 
+   An array SparseTable of size nlogn  is maintained,
+   where SparseTable[i][j] stores the index of the minimum value in the sub array starting 
+   at index i with length 2^j. e.g., SparseTable[0][2] and SparseTable[1][2] store the 
+   minimum values in the range 0 to 3 and 1 to 4, respectively.
+
+   To build up the SparseTable, we can use a technique similar to the one used in many Divide and
+   Conquer algorithms such as merge sort. We know that in an array of length 1, the single
+   element is the smallest one. This is our base case. To find out the index of the smallest
+   element in an array of size 2^j , we can compare the values at the indices of the smallest
+   elements in the two distinct sub arrays of size 2^(j-1) and take the index of the smallest
+   element of the two.
+  
+   With this O(n logn) pre-processing time and space requirements, the queries can be asnwered
+   in O(1) time.
+
+   Think about how would you answer a query using O(1).
+   (Hint : You need to split the interval [i...j] into two intervals if j is not a power of two.)
+
+4. All the three algorithms mentioned above (specifically, 2 and 3) work in static situations,
+i.e., when then input array is not changed/updated. Assume a situation in which elements
+of the array are updated, this also updates the metric (e.g., minimum or maximum) being
+estimated over the range of elements. For approaches 2 and 3, O(n logn) cost will 
+have to be incurred for any change in the input items to redo the pre-processing step.
+
+This situation can be addressed by the use of trees, which required O(n) time to build
+the initial tree (based on the input array), O(nlogn) space to maintain the tree,
+and O(log n) time to update the tree (if individual array elemets) are updated and 
+O(log n) time to answer range queries. This is a sense presents the balanced case, where
+all/most operations incur logarithmic complexity irrespective of the skew in terms
+of number of updates and number of queries.
+
+As part of this lab, we will implement approach 4. Approaches 1, 2, 3 are for self-study
+and will most likely feature in an exam.
+
+The tree-based approach
+-----------------------
+
+A segment tree is a data structure based on a binary tree that can be used for making 
+update/query operations upon array intervals in logarithmical time. We define the segment 
+tree for the interval [i, j] in the following recursive manner:
+
+1. The first node will hold the information for the interval [i, j]
+2. if i<j the left and right children of this node will hold the information for the 
+intervals [i, (i+j)/2] and [(i+j)/2+1, j]
+Notice that the height of a segment tree for an interval with n elements is [log n] + 1
+
+For a array based implementation of the segment tree, if we have a node at index x that is 
+not a leaf, then the left child of x is  at index 2*x and the right child at index 2*x+1.
+Note that the node indexing starts at 1, the array index may start at 0 and may need 
+some correction.
+
+Construction of Segment Tree from given array:
+----------------------------------------------
+We start with a segment arr[0 . . . n-1]. and every time we divide the current segment 
+into two halves(if it has not yet become a segment of length 1), and then call the 
+same procedure on both halves, and for each such segment, we store index/value of the element
+in the array in a segment tree node.
+
+Height of the segment tree will be [log n]. This build routine creates up to 
+O(1+2+4+8+...+2^[logn]) = O(2n) (smaller) segments and therefore runs in O(n). 
+If you use an array to implement the tree enough elements in the array need to
+be present to hold the tree--- at least 2n elements.
+//However, as we use simple 1-based compact array indexing, we need it to be at least 
+//of size 2 âˆ— 2^([logn]+1).
+
+Query for minimum value over a range:
+-------------------------------------
+With the segment tree ready, answering an RMQ can be done in O(log n).
+The answer for RMQ(i, i) is trivial---simply return i itself. 
+However, for the general case RMQ(i, j), further checks are needed. 
+Let p1 = RMQ(i, (i+j)/2) and p2 = RMQ((i+j)/2 + 1, j).
+Then RMQ(i, j) is p1 if A[p1] < A[p2] or p2 otherwise.
+
+Note: The assumption is that tree is storing index of the minimum value and
+hence can lookup the array for the actual value.
+
+Update of values in array:
+--------------------------
+
+When you are asked to update a value in the array, the segment tree can be updated
+recursively in O(logn) as well.
+(Hint: the update will propogate through some path in the tree from root to a leaf).
+
+
+To implement:
+-------------
+1. Segment tree (using either an array or a struct with pointers) and it's associated
+   operations---build, query and update.
+   Note: The state that you store within the tree can be indices or values, but you 
+   need to print values as output of range minimum queries.
+ 
+2. Implement update variations---update value of single element in the array and
+   update all elements in the array specified by a range.
+   Update of elements within a range (optional for this assignment).
+
+3. Test implementation correctness and complexity with respect to testcases provided.
+
+
+Input Format:
+--------------
+First line has two space seperated numbers 'n' (size of array A) and 
+'q' (number of queries).
+
+Second line has n integers A[i] (i=0 to n-1).
+
+Assume zero based indexing throughout the question.
+next q lines contains queries in following format:-
+1 i j
+or
+2 k v
+
+For example:
+5 6      // array of size 5 and 5 queries
+8        // array elements start here, this is index 0
+6
+10
+10
+6
+1 0 0   // queries start here
+1 0 1
+1 0 2
+1 0 3
+2 0 4
+1 0 4
+
+
+Output Format:
+--------------
+For query of type 1 output value of minimum element of A in range [i,j] (both inclusive).
+Each query output on new line.
+
+For update query of type 2 update A[k] with new value as v.
+
+Output for example above:
+8
+6
+6
+6
+4
+
+
+Submission:
+-----------
+To submit a single code file: segmenttree.cpp   (on bodhitree1.cse.iitb.ac.in)
+

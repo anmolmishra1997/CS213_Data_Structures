@@ -1,0 +1,103 @@
+
+CS293 
+Data Structures and Algorithms Lab
+Lab Exam #3
+----------------------------------
+
+credit:
+Techfest International Coding Challenge
+https://www.codechef.com/GMCO2016/problems/GMCO16TF
+
+HOHO 
+
+Problem Description
+-------------------
+Hop­-On-­Hop-­Off services are a great way to explore a city in a flexible manner, 
+at your own pace. Sightseeing Inc. wants to offer tourists the option to create their own 
+routes based on their interests. Sightseeing Inc. has a list of places of interest (POIs) 
+for each city, tagged with one or more categories. 
+
+They have hired you to design an algorithm which takes as input the tagged list of POIs, 
+the list of direct paths (with fares) between pairs of POIs and the categories of interest 
+of the user. The algorithm should then give the maximum number of places which can be 
+covered by a route, along with the total fare. If more than one such route exists, 
+the algorithm should pick the best route based on minimal total fare. 
+A route is a traversal on connected POIs.
+The route should not contain any POI which does not match the user's interests. 
+
+Note that given a list of user interests, the corresponding POIs may not be all 
+connected and hence may not be on the same route. We are interested in the best route, 
+i.e., the route which covers maximum number of POIs at the lowest fare.
+
+Note:
+1. A ticket (obtained by paying the fare) between any two POIs allows unlimited travel 
+between those POIs in any direction. All paths are bi-directional.
+2. If a desired route has only one POI in it, the fare is 0.
+
+Input
+-----
+- The first line of the input contains a single integer T denoting the number of test cases.
+- The first line of each test case contains two integers P and R separated by a space where 
+  P denotes the number of POIs and R denotes the number of direct paths between pairs of POIs.
+- This is followed by P lines, each line containing the name of the POI followed by it's 
+  categories, all separated by a space.
+- This is followed by R lines denoting R paths, each containing two POIs and the fare between 
+  them, all separated by a space.
+- The second-last line of each test case contains one or more categories of interest of the user 
+  separated by spaces.
+- The last line contains a BINARY FLAG 0/1, 
+  1 output the maximum number POIs and the lowest fare
+  0 output the number of routes with maximum POIs (ignoring fares) of desired categories
+
+Output
+------
+For each test case, output a single line containing two integers N and D separated by a space 
+where: 
+for flag 1
+N is the maximum number of POIs which will be covered in a single route 
+D is the total fare
+
+for flag 0
+N is the maximum number of POIs which will be covered by a single route 
+D is the total number of such routes (which have N POIs of the desired categories)
+
+Example
+-------
+1                                      // Number of testcases
+7 6                                    // 7 POIs and 6 paths
+ChandniChowk Shopping Historical Food  // name of POI followed by it's categories
+QutubMinar Historical 
+RedFort Historical 
+SarojniNagar Shopping 
+HumayunTomb Historical 
+IndiaGate Historical 
+JamaMasjid Historical
+ChandniChowk QutubMinar 15             // Path with fare 15 from CC to QM
+ChandniChowk RedFort 4 
+QutubMinar SarojniNagar 10 
+SarojniNagar HumayunTomb 10 
+HumayunTomb IndiaGate 10 
+JamaMasjid IndiaGate 10
+Historical                         // user is interested in "Historial" category
+1                                  // print maximum POIs that can be visited in a tour
+                                   // with the lowest fare
+
+Output (with flag 1)
+------
+3 19  // Redfort-ChandniChowk-QutubMinar is the cheapest route with maximum POIs
+      // of category "Historical"
+
+Output (with flag 0: Note the example input has flag 1 and not 0)
+------
+3 2    // two routes, both with 3 POIs possible with category "Historical"
+       // Redfort-ChandniChowk-QutubMinar and HumayunTomb-IndiaGate-JamaMasjid
+
+
+Hints:
+------
+1. Consider coding for output to be generated with flag '0' first.
+2. Helper code to read line by line and word by word has been provided (readline.cpp). 
+   This program reads everything as strings, you may have to read some stuff as integers etc.
+3. ./a.out for a working program is provided, can use for verification and comparison.
+
+SUBMISSION FILE: single file hoho.cpp (on bodhitree1.cse.iitb.ac.in)

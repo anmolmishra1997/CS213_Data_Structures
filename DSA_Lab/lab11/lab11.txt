@@ -1,0 +1,135 @@
+
+CS 293
+Data Structures and Algorithms Lab
+Lab #11
+----------------------------------
+
+Getting your job done with priority queues!
+
+Credits: This lab is borrowed from a problem statement which
+was part of Facebook Hacker Cup 2016 Round 1.
+
+link: https://www.facebook.com/hackercup/problem/1611251319125133/
+
+
+Laundro, Matt
+-------------
+Matt Laundro is about to engage in his favorite activity — doing laundry! 
+He has brought 'L' indistinguishable loads of laundry to his local 
+laundromat/washer-dryer, which has 'N' washing machines and 'M' dryers. 
+The ith washing machine takes 'Wi' minutes to wash one load of laundry, 
+and each dryer takes 'D' minutes to dry a load of laundry. At any point 
+in time, each machine may only be processing at most one load of laundry.
+
+As one might expect, Matt wants to wash and then dry each of his 'L' loads of 
+laundry. Each load of laundry will go through the following steps in order:
+
+1. A non-negative amount of time after Matt arrives at the laundromat, Matt places 
+a load in an unoccupied washing machine i 
+2. Wi minutes later, he removes the load from the washing machine, placing it 
+in a temporary holding basket (which has unlimited space)
+3. A non-negative amount of time later, he places the load in an unoccupied dryer
+4. D minutes later, he removes the load from the dryer
+5. Matt can instantaneously add laundry to or remove laundry from a machine. 
+   He can also instantly load or remove laundry from multiple machines.
+
+Note:
+- Matt has L loads of laundry on each visit to the landromat.
+- Based on Matt's procedure for washing+drying some machines (washers/dryers)
+can be idle.
+
+Objective:
+----------
+Help Matt minimize the amount of time (in minutes after he arrives at the laundromat) 
+after which he can be done drying all L loads of laundry!
+
+The procedure to be followed by Matt should use priority queue(s).
+
+Input:
+------
+Input begins with an integer T, the number of times Matt goes to the laundromat, 
+essentially the number of test cases in an input file.
+
+For each trip to the laundromat, there is first a line containing the space-separated 
+integers L, N, M, and D in that order. After that is a line containing N space-separated 
+integers, the ith of which is Wi.
+
+Output:
+-------
+For the ith trip, print a line containing the minimum time it will take Matt 
+to finish his laundry for that trip.
+
+Constraints
+1 ≤ T ≤ 50 
+1 ≤ L ≤ 1,000,000 
+1 ≤ N ≤ 100,000 
+1 ≤ M ≤ 1,000,000,000 
+0 ≤ D ≤ 1,000,000,000 
+1 ≤ Wi ≤ 1,000,000,000 
+
+Sample input:
+-------------
+5
+1 1 1 34
+1200
+2 3 2 10
+100 10 1
+3 3 3 3
+1 2 3
+4 2 2 7
+5 8
+999 1 999 6
+3
+
+Sample output:
+--------------
+1234
+12
+5
+22
+3003
+
+Explanation of sample example:
+In the first case, Matt has just one load of laundry. He washes it for 1200 minutes, and 
+dries it for 34 minutes. 
+In the second case, Matt uses the 1-minute washer for both loads of laundry. The second 
+load finishes at the 2-minute mark, so it finishes drying at the 12-minute mark.
+
+Todos:
+-----
+
+Part 0:
+Demonstrate usage of the C++ STL class priority_queue.
+Push values in priority queue implementing a min-heap, remove minimum value
+double the value and re-insert in queue.
+
+Check testcases in the /part0 directory.
+
+input format:
+5          // first line has number of values
+1 2 3 4 5  // the values to be inserted in the priority queue
+5          // number of get-minimum operations. 
+           // the priority queue should implement a min-heap.
+		   // for each pop/dequeue/get-minimum operation, display the minimum value, pop 
+           // it out, double it and re-insert in priority queue.
+
+output format: // values obtained by de-queue operations on separate lines
+1
+2
+2
+3
+4
+
+implement the code in file name: part0.cpp
+
+Part 1:
+Solve and implement the landro-matt problem. Use priority-queue(s) for this as well. 
+Implement the code in a file named laundry.cpp
+
+input and output formats mentioned above.
+
+to submit:
+tar the files part0.cpp and laundry.cpp in <roll_no>_lab11.tar.gz
+            <roll_no>_lab11                 //folder
+                    |-------part0.cpp       //file1
+                    |-------laundry.cpp     //file2
